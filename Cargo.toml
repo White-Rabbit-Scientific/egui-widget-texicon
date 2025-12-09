@@ -1,0 +1,29 @@
+[package]
+name = "egui-widget-texicon"
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.91"
+description = "An egui widget that combines an image and text (icon + label)"
+keywords = ["egui", "eframe", "widget", "ui", "gamedev"]
+categories = ["gui", "graphics", "rendering"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/resonanz/egui-widget-texicon"
+documentation = "https://docs.rs/egui-widget-texicon"
+readme = "README.md"
+homepage = "https://github.com/resonanz/egui-widget-texicon"
+maintainers = ["Rob Ward <rob@whiterabbitscientific.com>"]
+
+exclude = [
+    ".github/",
+    ".gitignore",
+    "images/",
+]
+
+[dependencies]
+egui = "0.33"
+
+[features]
+default = []
+
+[dev-dependencies]
+eframe = "0.33"
