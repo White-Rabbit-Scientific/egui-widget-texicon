@@ -49,8 +49,8 @@ pub struct Texicon<'a> {
     texi_tooltip_position: RectAlign,
 }
 
-/// Default values for the Texicon struct and
-/// a Builder Pattern implementation for customization.
+/// Default values for the Texicon struct and a
+/// Builder Pattern implementation for customization.
 impl<'a> Texicon<'a> {
     pub fn new(texistate: &'a mut TexiState) -> Self {
         // Set some default colors.
@@ -300,7 +300,7 @@ impl Widget for Texicon<'_> {
         let texi_text_color;
         let texi_img_tint_color;
         let texi_frame_color;
-        // Update Txicon colors depending on state
+        // Update Texicon colors depending on state
         if self.texistate.texi_being_hovered {
             texi_bkgnd_color = self.texi_bkgnd_col_hov;
             texi_text_color = self.texi_text_col_hov;
@@ -435,6 +435,7 @@ impl Widget for Texicon<'_> {
         // Texicon hover depends upon response
         self.texistate.texi_being_hovered = resp.hovered();
 
+        // Tooltip
         if let Some(text) = self.texi_tooltip_text {
             let mut tooltip = egui::Tooltip::for_enabled(&resp);
             let options = tooltip
