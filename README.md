@@ -13,16 +13,12 @@ It supports:
 
 Ideal for desktop apps, tools, editors, and games built with `egui` + `eframe`.
 
----
-
-### Preview
+## Preview
 
 * **[Live wasm browser example.](https://dreamy-meringue-f98d25.netlify.app/)**
 * TODO: Demo app coming soon.
 
----
-
-### Installation
+## Installation
 
 Add to your `Cargo.toml`:
 
@@ -30,8 +26,6 @@ Add to your `Cargo.toml`:
 [dependencies]
 texicon = { git = "https://github.com/white-rabbit-scientific/texicon.git" }
 ```
-
----
 
 ## Quick Start
 ```
@@ -53,8 +47,6 @@ if response.clicked() {
     state.texi_selected = !state.texi_selected; // toggle selection
 }
 ```
-
----
 
 ## Features & Customization
 
@@ -96,8 +88,6 @@ pub struct TexiState {
 
 You own the state — perfect for radio groups, toggle buttons, or selected tools.
 
----
-
 ## Example: Toolbar with Selected State
 
 ```
@@ -125,8 +115,6 @@ ui.horizontal(|ui| {
 });
 ```
 
----
-
 ## License
 
 Licensed under either of:
@@ -134,8 +122,6 @@ Licensed under either of:
 * MIT License (LICENSE-MIT)
 
 at your option.
-
----
 
 ## Author
 Made with ❤️ by White Rabbit Scientific
