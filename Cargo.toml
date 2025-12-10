@@ -1,5 +1,5 @@
 [package]
-name = "egui-widget-texicon"
+name = "egui_widget_texicon"
 version = "0.2.0"
 edition = "2021"
 rust-version = "1.91"
@@ -11,8 +11,6 @@ repository = "https://github.com/white-rabbit-scientific/egui-widget-texicon"
 documentation = "https://docs.rs/egui-widget-texicon"
 readme = "README.md"
 homepage = "https://github.com/white-rabbit-scientific/egui-widget-texicon"
-
-
 
 exclude = [
     ".github/",
