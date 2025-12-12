@@ -22,7 +22,8 @@ pub struct Texicon<'a> {
     texi_enabled: bool,
     texi_img: ImageSource<'static>,
     texi_img_size: Vec2,
-    texi_text: String,
+    texi_img_scale_hov: f32,
+    texi_text: Option<String>, // Texicon text is optional
     texi_text_size: f32,
     texi_img_text_gap: f32,
     texi_top_gap: f32,
@@ -43,7 +44,7 @@ pub struct Texicon<'a> {
     texi_frame_size: Vec2,
     texi_frame_width: f32,
     texi_inner_margin: Margin,
-    texi_rounding: CornerRadius,
+    texi_radius: CornerRadius,
     texi_tooltip_text: Option<String>,
     texi_tooltip_gap: f32,
     texi_tooltip_position: RectAlign,
@@ -68,9 +69,10 @@ impl<'a> Texicon<'a> {
             texistate,
             texi_img: include_image!("../assets/question.svg"),
             texi_img_size: vec2(32.0, 32.0),
-            texi_text: "Missing image".to_string(),
+            texi_img_scale_hov: 1.0,
+            texi_text: Some("Missing image".to_string()),
             texi_text_size: 13.0,
-            texi_img_text_gap: 0.0,
+            texi_img_text_gap: 4.0,
             texi_top_gap: 10.0,
             texi_bottom_gap: 10.0,
             texi_sense: Default::default(),
@@ -89,7 +91,7 @@ impl<'a> Texicon<'a> {
             texi_frame_size: vec2(70.0, 70.0),
             texi_frame_width: 1.0,
             texi_inner_margin: Margin::same(6),
-            texi_rounding: CornerRadius::same(6),
+            texi_radius: CornerRadius::same(6),
             texi_tooltip_text: None,
             texi_tooltip_gap: 10.0,
             texi_tooltip_position: RectAlign::RIGHT,
@@ -116,9 +118,16 @@ impl<'a> Texicon<'a> {
         self
     }
 
+    /// Set the img_size for the Texicon.
+    #[inline]
+    pub fn texi_img_scale_hov(mut self, texi_img_scale_hov: f32) -> Self {
+        self.texi_img_scale_hov = texi_img_scale_hov;
+        self
+    }
+
     /// Set the text for the Texicon.
     #[inline]
-    pub fn texi_text(mut self, texi_text: String) -> Self {
+    pub fn texi_text(mut self, texi_text: Option<String>) -> Self {
         self.texi_text = texi_text;
         self
     }
@@ -265,8 +274,8 @@ impl<'a> Texicon<'a> {
 
     /// Set the rounding for the Texicon.
     #[inline]
-    pub fn texi_rounding(mut self, texi_rounding: CornerRadius) -> Self {
-        self.texi_rounding = texi_rounding;
+    pub fn texi_radius(mut self, texi_radius: u8) -> Self {
+        self.texi_radius = CornerRadius::same(texi_radius);
         self
     }
 
@@ -318,6 +327,12 @@ impl Widget for Texicon<'_> {
             texi_frame_color = self.texi_frame_col;
         }
 
+        // Scale image size if hovered
+        let mut image_size = self.texi_img_size;
+        if self.texistate.texi_being_hovered {
+            image_size.x *= self.texi_img_scale_hov;
+            image_size.y *= self.texi_img_scale_hov;
+        }
         // Texicon frame width and color
         let stroke = Stroke {
             width: self.texi_frame_width,
@@ -328,7 +343,7 @@ impl Widget for Texicon<'_> {
         let frame = Frame::default()
             .outer_margin(Margin::ZERO)
             .inner_margin(Margin::ZERO)
-            .corner_radius(self.texi_rounding)
+            .corner_radius(self.texi_radius)
             .fill(texi_bkgnd_color)
             .stroke(stroke);
 
@@ -339,6 +354,9 @@ impl Widget for Texicon<'_> {
         let frame_output = ui.add_enabled_ui(self.texi_enabled, |ui| {
             // Show Texicon
             frame.show(ui, |ui| {
+                // Create a unique base ID from the state reference
+                let base_id = Id::new(self.texistate as *const _ as usize);
+
                 // Set Texicon frame size
                 ui.set_min_size(self.texi_frame_size);
                 ui.set_max_size(self.texi_frame_size);
@@ -350,67 +368,77 @@ impl Widget for Texicon<'_> {
                 let center_x = rect.center().x;
                 let center_y = rect.center().y;
 
-                // Calculate maximum width for text wrapping
-                let wrap_width = self.texi_frame_size.x
-                    - (self.texi_inner_margin.left + self.texi_inner_margin.right) as f32;
+                // Initialize start_y
+                let start_y;
 
-                // LayoutJob for Texicon text
-                let mut layout_job = LayoutJob::simple(
-                    self.texi_text.to_string(),
-                    FontId {
-                        size: self.texi_text_size,
-                        ..Default::default()
-                    },
-                    texi_text_color,
-                    wrap_width,
-                );
-                // Center each line
-                layout_job.halign = Align::Center;
+                // If Texicon contains text
+                let text_resp = if let Some(text) = &self.texi_text {
+                    // Calculate maximum width for text wrapping
+                    let wrap_width = self.texi_frame_size.x
+                        - (self.texi_inner_margin.left + self.texi_inner_margin.right) as f32;
 
-                // Use painter's layout_job method
-                let galley = ui.painter().layout_job(layout_job);
+                    // LayoutJob for Texicon text
+                    let mut layout_job = LayoutJob::simple(
+                        text.to_string(),
+                        FontId {
+                            size: self.texi_text_size,
+                            ..Default::default()
+                        },
+                        texi_text_color,
+                        wrap_width,
+                    );
+                    // Center each line
+                    layout_job.halign = Align::Center;
 
-                // Calculate text area (this could be one or more lines)
-                let galley_text_x = galley.size().x;
-                let galley_text_y = galley.size().y;
+                    // Use painter's layout_job method
+                    let galley = ui.painter().layout_job(layout_job);
 
-                // Calculate y starting position
-                let total_height = self.texi_img_size.y + self.texi_img_text_gap + galley_text_y;
-                let start_y = center_y - (total_height / 2.0);
+                    // Calculate text area (this could be one or more lines)
+                    let galley_text_x = galley.size().x;
+                    let galley_text_y = galley.size().y;
+
+                    // Calculate y starting position
+                    let total_height = image_size.y + self.texi_img_text_gap + galley_text_y;
+                    start_y = center_y - (total_height / 2.0);
+
+                    let text_adjustment = (image_size.y - self.texi_img_size.y) / 2.0;
+
+                    // Text position, does not change with image scale on hover
+                    let text_y = start_y + image_size.y + self.texi_img_text_gap - text_adjustment;
+
+                    // Final text position, now paint...
+                    let text_pos = pos2(center_x, text_y);
+                    ui.painter().galley(text_pos, galley, texi_text_color);
+
+                    // Get text rect for response
+                    let mut text_rect = Rect::from_center_size(
+                        pos2(center_x, text_y + galley_text_y / 2.0),
+                        vec2(galley_text_x, galley_text_y),
+                    );
+
+                    // Increase text_rect sense area to include the texi_img_text_gap
+                    text_rect.min.y = text_rect.min.y - self.texi_img_text_gap;
+
+                    // Final text response area (including img/text gap)
+                    // let text_resp = ui.interact(text_rect, base_id.with("text"), Sense::click());
+                    ui.interact(text_rect, base_id.with("text"), Sense::click())
+                } else {
+                    // No text, just image
+                    start_y = center_y - image_size.y / 2.0;
+                    ui.response()
+                };
 
                 // Image rect
-                let img_pos = pos2(center_x - (self.texi_img_size.x / 2.0), start_y);
-                let img_rect = Rect::from_min_size(img_pos, self.texi_img_size);
+                let img_pos = pos2(center_x - (image_size.x / 2.0), start_y);
+                let img_rect = Rect::from_min_size(img_pos, image_size);
 
                 // Paint the Texicon image, but...
                 // First convert ImageSource in Image (= cheap)
                 let image = Image::new(self.texi_img).tint(texi_img_tint_color);
                 image.paint_at(ui, img_rect);
 
-                // Text position
-                let text_y = start_y + self.texi_img_size.y + self.texi_img_text_gap;
-
-                // Final text position, now paint...
-                let text_pos = pos2(center_x, text_y);
-                ui.painter().galley(text_pos, galley, texi_text_color);
-
-                // Create a unique base ID from the state reference
-                let base_id = Id::new(self.texistate as *const _ as usize);
-
                 // Create specific interaction areas
                 let img_resp = ui.interact(img_rect, base_id.with("img"), Sense::click());
-
-                // Get text rect for response
-                let mut text_rect = Rect::from_center_size(
-                    pos2(center_x, text_y + galley_text_y / 2.0),
-                    vec2(galley_text_x, galley_text_y),
-                );
-
-                // Increase text_rect sense area to include the texi_img_text_gap
-                text_rect.min.y = text_rect.min.y - self.texi_img_text_gap;
-
-                // Final text response area (including img/text gap)
-                let text_resp = ui.interact(text_rect, base_id.with("text"), Sense::click());
 
                 (img_resp, text_resp, response)
             })
