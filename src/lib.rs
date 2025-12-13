@@ -1,6 +1,6 @@
 use egui::{
-    include_image, pos2, text::LayoutJob, vec2, Align, Color32, CornerRadius, FontId, Frame, Id,
-    Image, ImageSource, Margin, Rect, RectAlign, Response, Sense, Stroke, Ui, Vec2, Widget,
+    include_image, pos2, text::LayoutJob, vec2, Align, Color32, CornerRadius, FontId, Frame, Image,
+    ImageSource, Margin, Rect, RectAlign, Response, Sense, Stroke, Ui, Vec2, Widget,
 };
 
 #[derive(Default, PartialEq)]
@@ -10,16 +10,12 @@ pub enum TexiSense {
     ImageAndText,
 }
 
-#[derive(Default, Clone, Debug)]
-pub struct TexiState {
-    pub texi_being_hovered: bool,
-    pub texi_selected: bool,
-}
-
 #[must_use = "You should put this widget in a ui with `ui.add(widget);`"]
-pub struct Texicon<'a> {
-    texistate: &'a mut TexiState,
+pub struct Texicon {
+    texi_uid: String,
     texi_enabled: bool,
+    texi_is_selected: bool,
+    texi_is_hovered: bool,
     texi_img: ImageSource<'static>,
     texi_img_size: Vec2,
     texi_img_scale_hov: f32,
@@ -52,8 +48,8 @@ pub struct Texicon<'a> {
 
 /// Default values for the Texicon struct and a
 /// Builder Pattern implementation for customization.
-impl<'a> Texicon<'a> {
-    pub fn new(texistate: &'a mut TexiState) -> Self {
+impl Texicon {
+    pub fn new(texi_tid: &str) -> Self {
         // Set some default colors.
         // egui gamma_multiply_u8:
         //    "Multiply with 127 to make color
@@ -65,8 +61,10 @@ impl<'a> Texicon<'a> {
         let bkgnd_col_sel = Color32::DARK_GRAY.gamma_multiply_u8(100);
         let bkgnd_col_hov = Color32::DARK_GRAY.gamma_multiply_u8(148);
         Texicon {
+            texi_uid: texi_tid.to_string(),
             texi_enabled: true,
-            texistate,
+            texi_is_selected: false,
+            texi_is_hovered: false,
             texi_img: include_image!("../assets/question.svg"),
             texi_img_size: vec2(32.0, 32.0),
             texi_img_scale_hov: 1.0,
@@ -101,6 +99,20 @@ impl<'a> Texicon<'a> {
     #[inline]
     pub fn texi_enabled(mut self, texi_enabled: bool) -> Self {
         self.texi_enabled = texi_enabled;
+        self
+    }
+
+    /// Set the selected flag for the Texicon.
+    #[inline]
+    pub fn texi_is_selected(mut self, texi_is_selected: bool) -> Self {
+        self.texi_is_selected = texi_is_selected;
+        self
+    }
+
+    /// Set the enabled flag for the Texicon.
+    #[inline]
+    pub fn texi_is_hovered(mut self, texi_is_hovered: bool) -> Self {
+        self.texi_is_hovered = texi_is_hovered;
         self
     }
 
@@ -302,7 +314,7 @@ impl<'a> Texicon<'a> {
 }
 
 /// Widget trait to enable the Texicon widget to be displayed
-impl Widget for Texicon<'_> {
+impl Widget for Texicon {
     fn ui(self, ui: &mut Ui) -> Response {
         // Texicon colors
         let texi_bkgnd_color;
@@ -310,12 +322,12 @@ impl Widget for Texicon<'_> {
         let texi_img_tint_color;
         let texi_frame_color;
         // Update Texicon colors depending on state
-        if self.texistate.texi_being_hovered {
+        if self.texi_is_hovered {
             texi_bkgnd_color = self.texi_bkgnd_col_hov;
             texi_text_color = self.texi_text_col_hov;
             texi_img_tint_color = self.texi_img_tint_hov;
             texi_frame_color = self.texi_frame_col_hov;
-        } else if self.texistate.texi_selected {
+        } else if self.texi_is_selected {
             texi_bkgnd_color = self.texi_bkgnd_col_sel;
             texi_text_color = self.texi_text_col_sel;
             texi_img_tint_color = self.texi_img_tint_sel;
@@ -329,7 +341,7 @@ impl Widget for Texicon<'_> {
 
         // Scale image size if hovered
         let mut image_size = self.texi_img_size;
-        if self.texistate.texi_being_hovered {
+        if self.texi_is_hovered {
             image_size.x *= self.texi_img_scale_hov;
             image_size.y *= self.texi_img_scale_hov;
         }
@@ -354,8 +366,8 @@ impl Widget for Texicon<'_> {
         let frame_output = ui.add_enabled_ui(self.texi_enabled, |ui| {
             // Show Texicon
             frame.show(ui, |ui| {
-                // Create a unique base ID from the state reference
-                let base_id = Id::new(self.texistate as *const _ as usize);
+                // Create a unique base ID
+                let base_id = ui.id().with(self.texi_uid);
 
                 // Set Texicon frame size
                 ui.set_min_size(self.texi_frame_size);
@@ -461,7 +473,7 @@ impl Widget for Texicon<'_> {
         }
 
         // Texicon hover depends upon response
-        self.texistate.texi_being_hovered = resp.hovered();
+        // self.texi_is_hovered = resp.hovered();
 
         // Tooltip
         if let Some(text) = self.texi_tooltip_text {
