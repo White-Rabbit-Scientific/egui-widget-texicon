@@ -88,6 +88,9 @@ pub struct TexiState {
 
 You own the state — perfect for radio groups, toggle buttons, or selected tools.
 
+## Future ideas
+* Add support for different fonts (RichText)
+
 ## Example: Toolbar with Selected State
 
 ```
@@ -104,7 +107,7 @@ ui.horizontal(|ui| {
             .texi_img_size(vec2(36.0, 36.0))
             .texi_sense(TexiSense::Frame)
             .texi_rounding(8.0)
-            .ui(ui);
+            .ui(ui); // TODO
 
         if resp.clicked() {
             // Deselect all, select this one
