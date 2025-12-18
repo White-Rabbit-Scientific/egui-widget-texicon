@@ -10,6 +10,13 @@ pub enum TexiSense {
     ImageAndText,
 }
 
+#[derive(Default, PartialEq)]
+enum Hovering {
+    #[default]
+    False,
+    True,
+}
+
 #[must_use = "You should put this widget in a ui with `ui.add(widget);`"]
 pub struct Texicon {
     uid: String,
@@ -58,7 +65,7 @@ impl Texicon {
             is_hovered: false,
             img_size: vec2(32.0, 32.0),
             img_scale_hov: 1.0,
-            text: Some("Missing text".to_string()),
+            text: None,
             text_size: 13.0,
             img_text_gap: 4.0,
             top_gap: 10.0,
@@ -303,23 +310,127 @@ impl Texicon {
     }
 }
 
-/// Widget trait to enable the Texicon widget to be displayed
-///
-///
+// Widget trait to enable the Texicon widget to be displayed
 impl Widget for Texicon {
     fn ui(self, ui: &mut Ui) -> Response {
+        // Add space before the frame
+        ui.add_space(self.top_gap);
+        // Create a unique widget base ID
+        let base_id = ui.id().with(self.uid);
+        // Allocate the frame rect with interaction sense
+        let (frame_rect, frame_resp) = ui.allocate_exact_size(self.frame_size, Sense::click());
+        // println!("Frame_rect: {:?}", frame_rect); // correct
+        // -------------------------------------------
+        // Calculate image size (including up-scaling)
+        // -------------------------------------------
+        let image_size = self.img_size * self.img_scale_hov;
+        // let image_size_x = image_size.x;
+        let image_size_y = image_size.y;
+
+        // -------------------
+        // Calculate text size
+        // -------------------
+        // Is there any text to display?
+        let text: &str = self.text.as_deref().unwrap_or("Missing text");
+        // Calculate maximum width for text wrapping
+        let inner_margin_total = (self.inner_margin.left + self.inner_margin.right) as f32;
+        let wrap_width = self.frame_size.x - inner_margin_total;
+        // Measure galley with text content
+        let mut measure_job = LayoutJob::simple(
+            text.to_string(),
+            FontId {
+                size: self.text_size,
+                ..Default::default()
+            },
+            Color32::PLACEHOLDER, // irrelevent for size
+            wrap_width,
+        );
+        // Set text alignment
+        measure_job.halign = Align::Center;
+        // Lay out text in a galley
+        let galley = ui.painter().layout_job(measure_job);
+        // Calculate text area (this could be one or more lines)
+        // let galley_text_x = galley.size().x;
+        let galley_text_y = galley.size().y;
+
+        // -----------------------------------
+        // Calculate image + gap + text height
+        // -----------------------------------
+        let total_img_gap_text_y = image_size_y + self.img_text_gap + galley_text_y;
+
+        // --------------------------------
+        // Calculate image center position
+        // --------------------------------
+        let frame_center = frame_rect.center();
+        let img_center = pos2(
+            frame_center.x,
+            frame_center.y - (total_img_gap_text_y - image_size_y) / 2.0,
+        );
+
+        // -------------------------------------------------
+        // Calculate image response rect for up-scaled image
+        // -------------------------------------------------
+        let img_rect = Rect::from_center_size(img_center, image_size);
+
+        // -------------------------------------
+        // Create response for image interaction
+        // -------------------------------------
+        let img_resp = ui.interact(img_rect, base_id.with("img"), Sense::click());
+
+        // -------------------------------
+        // Calculate text center position
+        // -------------------------------
+        let text_center = pos2(
+            frame_center.x,
+            frame_center.y + (total_img_gap_text_y - galley_text_y) / 2.0,
+        );
+
+        // ----------------------------
+        // Calculate text response rect
+        // ----------------------------
+        let text_rect = Rect::from_center_size(text_center, galley.size());
+
+        // --------------------------------------
+        // Increase sense area to include the gap
+        // --------------------------------------
+        let mut increased = text_rect;
+        increased.min.y -= self.img_text_gap;
+
+        // ------------------------------------
+        // Create response for text interaction
+        // ------------------------------------
+        let text_resp = ui.interact(increased, base_id.with("text"), Sense::click());
+
+        // Initialize hovering state to "not hovering"
+        let mut hovering = Hovering::False;
+
+        // ------------------------------------
+        // Check if hovering over image or text
+        // ------------------------------------
+        if self.sense == TexiSense::ImageAndText {
+            if img_resp.hovered() || text_resp.hovered() {
+                hovering = Hovering::True;
+            }
+        } else if self.sense == TexiSense::Frame {
+            if img_resp.hovered() || text_resp.hovered() || frame_resp.hovered() {
+                hovering = Hovering::True;
+            }
+        }
+
+        // ------------------------
+        // The colors heavy lifting
+        // ------------------------
         let visuals = ui.visuals();
         let style_ina = visuals.widgets.inactive;
         let style_hov = visuals.widgets.hovered;
         let style_act = visuals.widgets.active;
-
         // Texicon colors
         let texi_bkgnd_col;
         let texi_text_col;
         let texi_img_tint;
         let texi_frame_col;
         // Update Texicon colors depending on state
-        if self.is_hovered {
+        if hovering == Hovering::True {
             texi_bkgnd_col = self.bkgnd_col_hov.unwrap_or(style_hov.bg_fill);
             texi_text_col = self.text_col_hov.unwrap_or(visuals.strong_text_color());
             texi_img_tint = self.img_tint_col_hov.unwrap_or(visuals.strong_text_color());
@@ -336,156 +447,64 @@ impl Widget for Texicon {
             texi_frame_col = self.frame_col.unwrap_or(visuals.weak_text_color());
         }
 
-        // Scale image size if hovered
-        let mut image_size = self.img_size;
-        if self.is_hovered {
-            image_size.x *= self.img_scale_hov;
-            image_size.y *= self.img_scale_hov;
-        }
         // Texicon frame width and color
         let stroke = Stroke {
             width: self.frame_width,
             color: texi_frame_col,
         };
 
-        // Texicon frame
-        let frame = Frame::default()
-            .outer_margin(Margin::ZERO)
-            .inner_margin(Margin::ZERO)
-            .corner_radius(self.radius)
-            .fill(texi_bkgnd_col)
-            .stroke(stroke);
+        // --------------------------------------------------
+        // Add functionality for enabling / disabling Texicon
+        // --------------------------------------------------
+        ui.add_enabled_ui(self.enabled, |ui| {
+            ui.painter().rect(
+                frame_rect,
+                self.radius,
+                texi_bkgnd_col,
+                stroke,
+                egui::StrokeKind::Middle,
+            );
 
-        // Add space before the frame
-        ui.add_space(self.top_gap);
+            // --------------------------------------
+            // Convert ImageSource in Image (= cheap)
+            // --------------------------------------
+            let image = Image::new(self.img).tint(texi_img_tint);
 
-        // Display Texicon as enabled or disabled
-        let frame_resp = ui.add_enabled_ui(self.enabled, |ui| {
-            // Show Texicon
-            frame.show(ui, |ui| {
-                // Create a unique base ID
-                let base_id = ui.id().with(self.uid);
+            // -----------------------
+            // Paint the Texicon image
+            // -----------------------
+            image.paint_at(ui, img_rect);
 
-                // Set Texicon frame size
-                ui.set_min_size(self.frame_size);
-                ui.set_max_size(self.frame_size);
-
-                // Allocate the full rect with interaction sense
-                let (rect, response) = ui.allocate_exact_size(self.frame_size, Sense::click());
-
-                // Calculate center positions
-                let center_x = rect.center().x;
-                let center_y = rect.center().y;
-
-                // Initialize start_y
-                let start_y;
-
-                // If Texicon contains text
-                let text_resp = if let Some(text) = &self.text {
-                    // Calculate maximum width for text wrapping
-                    let wrap_width = self.frame_size.x
-                        - (self.inner_margin.left + self.inner_margin.right) as f32;
-
-                    // LayoutJob for Texicon text
-                    let mut layout_job = LayoutJob::simple(
-                        text.to_string(),
-                        FontId {
-                            size: self.text_size,
-                            ..Default::default()
-                        },
-                        texi_text_col,
-                        wrap_width,
-                    );
-                    // Center each line
-                    layout_job.halign = Align::Center;
-                    // layout_job.sections[0].format.color = texi_text_col;
-
-                    // Use painter's layout_job method
-                    let galley = ui.painter().layout_job(layout_job);
-
-                    // Calculate text area (this could be one or more lines)
-                    let galley_text_x = galley.size().x;
-                    let galley_text_y = galley.size().y;
-
-                    // Calculate y starting position
-                    let total_height = image_size.y + self.img_text_gap + galley_text_y;
-                    start_y = center_y - (total_height / 2.0);
-
-                    let text_adjustment = (image_size.y - self.img_size.y) / 2.0;
-
-                    // Text position, does not change with image scale on hover
-                    let text_y = start_y + image_size.y + self.img_text_gap - text_adjustment;
-
-                    // Final text position, now paint...
-                    let text_pos = pos2(center_x, text_y);
-                    ui.painter().galley(text_pos, galley, texi_text_col);
-
-                    // Get text rect for response
-                    let mut text_rect = Rect::from_center_size(
-                        pos2(center_x, text_y + galley_text_y / 2.0),
-                        vec2(galley_text_x, galley_text_y),
-                    );
-
-                    // Increase text_rect sense area to include the texi_img_text_gap
-                    text_rect.min.y = text_rect.min.y - self.img_text_gap;
-
-                    // Final text response area (including img/text gap)
-                    ui.interact(text_rect, base_id.with("text"), Sense::click())
-                } else {
-                    // No text, just image
-                    start_y = center_y - image_size.y / 2.0;
-                    ui.response()
-                };
-
-                // Image rect
-                let img_pos = pos2(center_x - (image_size.x / 2.0), start_y);
-                let img_rect = Rect::from_min_size(img_pos, image_size);
-
-                // Paint the Texicon image, but...
-                // First convert ImageSource in Image (= cheap)
-                let image = Image::new(self.img).tint(texi_img_tint);
-                image.paint_at(ui, img_rect);
-
-                // Create specific interaction areas
-                let img_resp = ui.interact(img_rect, base_id.with("img"), Sense::click());
-
-                (img_resp, text_resp, response)
-            })
+            // --------------
+            // Paint the text
+            // --------------
+            ui.painter()
+                .galley(text_rect.center_top(), galley, texi_text_col);
         });
 
         // Add space after the frame
         ui.add_space(self.bottom_gap);
 
-        // Aggregate responses
-        let (img_resp, text_resp, frame_resp) = frame_resp.inner.inner;
-
-        // If ignoring outer frame response,
-        // union the image and text responses
-        let mut resp = img_resp.union(text_resp);
-
-        // If including the outer frame response,
-        // union frame with the image and text
-        if self.sense == TexiSense::Frame {
-            resp = resp.union(frame_resp);
-        }
-
-        // Tooltip
-        if let Some(text) = self.tooltip_text {
-            let mut tooltip = egui::Tooltip::for_enabled(&resp);
-            let options = tooltip
-                .popup
-                .align(self.tooltip_position)
-                .gap(self.tooltip_gap)
-                .close_behavior(egui::PopupCloseBehavior::CloseOnClick);
-            tooltip.popup = options;
-            tooltip.show(|ui| {
-                ui.label(text);
-            });
-        };
+        // // Tooltip
+        // if let Some(text) = self.tooltip_text {
+        //     let mut tooltip = egui::Tooltip::for_enabled(&resp);
+        //     let options = tooltip
+        //         .popup
+        //         .align(self.tooltip_position)
+        //         .gap(self.tooltip_gap)
+        //         .close_behavior(egui::PopupCloseBehavior::CloseOnClick);
+        //     tooltip.popup = options;
+        //     tooltip.show(|ui| {
+        //         ui.label(text);
+        //     });
+        // };
 
         // The response comes from one of two possible sources:
         // 1. The image + text responses (ignores the outer frame response)
         // 2. The outer frame response (includes image + text responses)
-        resp
+        match self.sense {
+            TexiSense::Frame => img_resp.union(text_resp).union(frame_resp),
+            TexiSense::ImageAndText => img_resp.union(text_resp),
+        }
     }
 }
