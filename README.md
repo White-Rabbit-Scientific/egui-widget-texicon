@@ -6,14 +6,13 @@ It supports:
 - Custom SVG/PNG images with tinting
 - Multi-state coloring (normal / hover / selected)
 - Optional text below the icon with automatic centering and wrapping
-- Clickable image and/or text areas
-- Full frame or image+text-only interaction sensing
+- Clickable full frame or image+text-only interaction sensing
 - Tooltips with customizable position and gap
 - Builder pattern for clean, fluent configuration
 - Runs on Linux, Mac, Windows, WebAssembly (wasm) and Raspberry Pi
 - Images are compiled into the binary executable
 
-Ideal for desktop apps, tools, editors, and games built with `egui` + `eframe`.
+Ideal for desktop apps, tools, editors, and games built with [egui](https://github.com/emilk/egui/) + [eframe](https://github.com/emilk/eframe_template).
 
 ## Live wasm demo app
 
@@ -23,23 +22,23 @@ The wasm [demo app](https://dreamy-meringue-f98d25.netlify.app/) runs in your we
 
 ## Theming
 
-The [demo app](https://dreamy-meringue-f98d25.netlify.app/) uses the [Catppuccin](https://catppuccin.com/) ```egui-themes``` widget which is available on White Rabbit's [Github repo](https://github.com/White-Rabbit-Scientific/egui-themes).
+The demo app uses the [Catppuccin](https://catppuccin.com/) ```egui-themes``` widget which is available on White Rabbit's [Github repo](https://github.com/White-Rabbit-Scientific/egui-themes).
 
 ## Quick Start
 
 ### Option 1. Download the Texicon demo app.
-* Download from [Github](https://github.com/White-Rabbit-Scientific/egui-widget-texicon-demo-app) then compile and run: ```cargo run```
+* [Download from Github](https://github.com/White-Rabbit-Scientific/egui-widget-texicon-demo-app) then compile and run: ```cargo run```
 
 ### Option 2. Begin from eframe_template app.
-* Download eframe_template from [Github](https://github.com/emilk/eframe_template).
-* Ensure ```rust-toolchain``` and ```Cargo.toml``` have the latest rust versions.
+* [Download the eframe_template](https://github.com/emilk/eframe_template) from Github.
+* Ensure ```rust-toolchain``` and ```Cargo.toml``` specify the latest rust version.
 * Add ```egui-widget-texicon``` and ```egui_extras``` to `Cargo.toml`. ```egui_extras``` is required for egui to load images.
 ```toml
 [dependencies]
 egui-widget-texicon = 0.2
 egui_extras = { version = "0.33", features = ["default", "all_loaders"] }
 ```
-```main.rs``` needs a small modification. The ```Box::new``` code block should be as follows.
+```main.rs``` needs a small modification to include the image loader. Modify the ```Box::new``` code block:
 ```toml
 Box::new(|cc| {
     // This gives us image support:
@@ -47,15 +46,15 @@ Box::new(|cc| {
     Ok(Box::new(eframe_template::TemplateApp::new(cc)))
 }),
 ```
-In ```app.rs``` select an image to use for the Texicon. The following will embed a PNG image into the compiled binary file.
+In ```app.rs``` select an image to use for the Texicon. The following uses an existing ```eframe_template``` image:
 ```toml
 const TEXI_IMG: egui::ImageSource<'_> = egui::include_image!("../assets/icon-1024.png");
 ```
-The Texicon widget is added as shown below. The TEXI_IMG image is passed to the widget.
+The Texicon widget is added into your app as follows. TEXI_IMG is passed to the widget:
 ```toml
 ui.add(egui_widget_texicon::Texicon::new(TEXI_IMG));
 ```
-Texicon is customizable as shown in the example below:
+Texicon widgets can be customized as shown in the example below:
 ```toml
 egui_widget_texicon::Texicon::new(TEXI_IMG)
     .enabled(true)
