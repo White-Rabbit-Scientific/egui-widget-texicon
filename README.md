@@ -15,17 +15,15 @@ It supports:
 
 Ideal for desktop apps, tools, editors, and games built with `egui` + `eframe`.
 
-## Screenshot
+## Live wasm demo app
+
+The wasm [demo app](https://dreamy-meringue-f98d25.netlify.app/) runs in your web browser.
 
 ![Screenshot](images/Screenshot1.png)
 
-## Preview / live wasm demo
-
-* The [Live wasm](https://dreamy-meringue-f98d25.netlify.app/) demo runs in your web browser.
-
 ## Theming
 
-The demo app demonstrates the [Catppuccin](https://catppuccin.com/) themes which are available as an egui widget on White Rabbit's ```egui-themes``` [Github repo](https://github.com/White-Rabbit-Scientific/egui-themes).
+The [demo app](https://dreamy-meringue-f98d25.netlify.app/) uses the [Catppuccin](https://catppuccin.com/) ```egui-themes``` widget which is available on White Rabbit's [Github repo](https://github.com/White-Rabbit-Scientific/egui-themes).
 
 ## Quick Start
 
@@ -41,7 +39,7 @@ The demo app demonstrates the [Catppuccin](https://catppuccin.com/) themes which
 egui-widget-texicon = 0.2
 egui_extras = { version = "0.33", features = ["default", "all_loaders"] }
 ```
-The egui image loaded also requires adding to ```main.rs```. The complete code block in ```main.rs``` should be as follows:
+```main.rs``` needs a small modification. The ```Box::new``` code block should be as follows.
 ```toml
 Box::new(|cc| {
     // This gives us image support:
@@ -49,15 +47,15 @@ Box::new(|cc| {
     Ok(Box::new(eframe_template::TemplateApp::new(cc)))
 }),
 ```
-Select the image to use for the Texicon. The following will embed the image into the compiled binary file.
+In ```app.rs``` select an image to use for the Texicon. The following will embed a PNG image into the compiled binary file.
 ```toml
 const TEXI_IMG: egui::ImageSource<'_> = egui::include_image!("../assets/icon-1024.png");
 ```
-Display the Texicon:
+The Texicon widget is added as shown below. The TEXI_IMG image is passed to the widget.
 ```toml
 ui.add(egui_widget_texicon::Texicon::new(TEXI_IMG));
 ```
-Texicon has a large number of customization options. Here's an example of how to use them:
+Texicon is customizable as shown in the example below:
 ```toml
 egui_widget_texicon::Texicon::new(TEXI_IMG)
     .enabled(true)
