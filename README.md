@@ -13,10 +13,14 @@ It supports:
 
 Ideal for desktop apps, tools, editors, and games built with `egui` + `eframe`.
 
+## Screenshot
+
+![Screenshot](images/Screenshot1.png)
+
 ## Preview
 
 * **[Live wasm browser example.](https://dreamy-meringue-f98d25.netlify.app/)**
-* TODO: Demo app coming soon.
+* [egui app](https://github.com/White-Rabbit-Scientific/egui-widget-texicon-demo-app)
 
 ## Installation
 
