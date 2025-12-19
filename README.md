@@ -10,6 +10,7 @@ It supports:
 - Full frame or image+text-only interaction sensing
 - Tooltips with customizable position and gap
 - Builder pattern for clean, fluent configuration
+- Runs on Linux, Mac, Windows
 
 Ideal for desktop apps, tools, editors, and games built with `egui` + `eframe`.
 
@@ -19,108 +20,58 @@ Ideal for desktop apps, tools, editors, and games built with `egui` + `eframe`.
 
 ## Preview
 
-* **[Live wasm browser example.](https://dreamy-meringue-f98d25.netlify.app/)**
-* [egui app](https://github.com/White-Rabbit-Scientific/egui-widget-texicon-demo-app)
-
-## Installation
-
-Add to your `Cargo.toml`:
-
-```toml
-[dependencies]
-texicon = { git = "https://github.com/white-rabbit-scientific/texicon.git" }
-```
+* [Live wasm browser example.](https://dreamy-meringue-f98d25.netlify.app/)
 
 ## Quick Start
+
+### Option 1. Download the Texicon demo app.
+* Download XXX from [Github](https://github.com/White-Rabbit-Scientific/egui-widget-texicon-demo-app) then compile and run: ```cargo run```
+
+### Option 2. Begin from eframe_template app.
+* Download eframe_template from [Github](https://github.com/emilk/eframe_template).
+* Ensure ```rust-toolchain``` and ```Cargo.toml``` have the latest rust versions.
+* Add ```egui-widget-texicon``` and ```egui_extras``` to `Cargo.toml`. ```egui_extras``` is required for egui to load images.
+```toml
+[dependencies]
+egui-widget-texicon = 0.2
+egui_extras = { version = "0.33", features = ["default", "all_loaders"] }
 ```
-use egui::{include_image, vec2, Align2};
-use texicon::{TexiState, Texicon};
-
-let mut state = TexiState::default();
-
-let response = Texicon::new(&mut state)
-    .texi_img(include_image!("../assets/save.svg"))
-    .texi_text("Save".to_string())
-    .texi_img_size(vec2(48.0, 48.0))
-    .texi_text_size(14.0)
-    .texi_tooltip_text(Some("Save the current document".to_string()))
-    .ui(ui);
-
-if response.clicked() {
-    println!("Save clicked!");
-    state.texi_selected = !state.texi_selected; // toggle selection
-}
+The egui image loaded also requires adding to ```main.rs```. The complete code block in ```main.rs``` should be as follows:
+```toml
+Box::new(|cc| {
+    // This gives us image support:
+    egui_extras::install_image_loaders(&cc.egui_ctx);
+    Ok(Box::new(eframe_template::TemplateApp::new(cc)))
+}),
 ```
-
-## Features & Customization
-
-Texicon uses a fluent builder pattern — chain methods to style it exactly how you want:
-
+Select the image to use for the Texicon. The following will embed the image into the compiled binary file.
+```toml
+const TEXI_IMG: egui::ImageSource<'_> = egui::include_image!("../assets/icon-1024.png");
 ```
-Texicon::new(&mut state)
-    .texi_img(include_image!("../assets/settings.svg"))
-    .texi_img_size(vec2(40.0, 40.0))
-    .texi_text("Settings".into())
-    .texi_text_size(12.0)
-    .texi_img_text_gap(8.0)
-    .texi_top_gap(12.0)
-    .texi_bottom_gap(12.0)
-    .texi_bkgnd_col(Color32::from_black_alpha(40))
-    .texi_bkgnd_col_hov(Color32::from_black_alpha(80))
-    .texi_bkgnd_col_sel(Color32::from_rgb(70, 130, 220))
-    .texi_img_tint(Color32::LIGHT_GRAY)
-    .texi_img_tint_hov(Color32::WHITE)
-    .texi_rounding(12.0)
-    .texi_tooltip_text(Some("Open application settings".into()))
-    .texi_sense(TexiSense::Frame) // or .ImageAndText
-    .ui(ui);
+Display the Texicon:
+```toml
+ui.add(egui_widget_texicon::Texicon::new(TEXI_IMG));
 ```
-
-### Interaction Modes (```TexiSense```)
-* ```TexiSense::Frame``` — entire frame is clickable (default)
-* ```TexiSense::ImageAndText``` — only image and text are clickable (great for dense layouts)
-
-### State Management
-Each Texicon binds to a TexiState which tracks:
-
-```
-pub struct TexiState {
-    pub texi_being_hovered: bool,
-    pub texi_selected: bool,
-}
+Texicon has a large number of customization options. Here's an example of how to use them:
+```toml
+egui_widget_texicon::Texicon::new(TEXI_IMG)
+    .enabled(true)
+    .selected(true)
+    .img_size(egui::vec2(50., 50.))
+    .img_scale_hov(1.5)
+    .text("Button text")
+    .text_size(18.)
+    .bkgnd_col(egui::Color32::RED)
+    .img_tint_col_hov(egui::Color32::PURPLE)
+    .text_col_hov(egui::Color32::ORANGE)
+    .frame_col_hov(egui::Color32::GREEN)
+    .frame_size(egui::vec2(100., 150.))
+    .frame_width(4.)
+    .tooltip_text("I am a tooltip".to_string())
+    .tooltip_gap(40.)
+    .tooltip_position(egui::RectAlign::BOTTOM),
 ```
 
-You own the state — perfect for radio groups, toggle buttons, or selected tools.
-
-## Future ideas
-* Add support for different fonts (RichText)
-
-## Example: Toolbar with Selected State
-
-```
-ui.horizontal(|ui| {
-    for (icon, label, selected) in &mut tools {
-        let mut state = TexiState {
-            texi_selected: *selected,
-            ..Default::default()
-        };
-
-        let resp = Texicon::new(&mut state)
-            .texi_img(icon.clone())
-            .texi_text(label.clone())
-            .texi_img_size(vec2(36.0, 36.0))
-            .texi_sense(TexiSense::Frame)
-            .texi_rounding(8.0)
-            .ui(ui); // TODO
-
-        if resp.clicked() {
-            // Deselect all, select this one
-            tools.iter_mut().for_each(|t| t.2 = false);
-            *selected = true;
-        }
-    }
-});
-```
 
 ## License
 
@@ -131,7 +82,7 @@ Licensed under either of:
 at your option.
 
 ## Author
-Made with ❤️ by White Rabbit Scientific
+Made with ❤️ by Rob @ White Rabbit Scientific
 
 Inspired by modern design tools and clean UI patterns.
 
