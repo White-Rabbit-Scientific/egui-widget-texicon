@@ -19,10 +19,11 @@ Ideal for desktop apps, tools, editors, and games built with [egui](https://gith
 The wasm [demo app](https://dreamy-meringue-f98d25.netlify.app/) runs in your web browser.
 
 ![Screenshot](images/Screenshot1.png)
+![Screenshot](images/Screenshot2.png)
 
 ## Theming
 
-The demo app uses the [Catppuccin](https://catppuccin.com/) ```egui-themes``` widget which is available on White Rabbit's [Github repo](https://github.com/White-Rabbit-Scientific/egui-themes).
+The demo app uses the [Catppuccin](https://catppuccin.com/) ```egui-themes``` widget with extended color palette, available on White Rabbit's [Github repo](https://github.com/White-Rabbit-Scientific/egui-themes).
 
 ## Quick Start
 
