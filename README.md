@@ -10,7 +10,8 @@ It supports:
 - Full frame or image+text-only interaction sensing
 - Tooltips with customizable position and gap
 - Builder pattern for clean, fluent configuration
-- Runs on Linux, Mac, Windows and WebAssembly (wasm)
+- Runs on Linux, Mac, Windows, WebAssembly (wasm) and Raspberry Pi
+- Images are compiled into the binary executable
 
 Ideal for desktop apps, tools, editors, and games built with `egui` + `eframe`.
 
@@ -24,12 +25,12 @@ Ideal for desktop apps, tools, editors, and games built with `egui` + `eframe`.
 
 ## Theming
 
-The demo app also shows off the [Catppuccin](https://catppuccin.com/) themes which are available as an egui widget on White Rabbit's ```egui-themes``` [Github repo](https://github.com/White-Rabbit-Scientific/egui-themes).
+The demo app demonstrates the [Catppuccin](https://catppuccin.com/) themes which are available as an egui widget on White Rabbit's ```egui-themes``` [Github repo](https://github.com/White-Rabbit-Scientific/egui-themes).
 
 ## Quick Start
 
 ### Option 1. Download the Texicon demo app.
-* Download XXX from [Github](https://github.com/White-Rabbit-Scientific/egui-widget-texicon-demo-app) then compile and run: ```cargo run```
+* Download from [Github](https://github.com/White-Rabbit-Scientific/egui-widget-texicon-demo-app) then compile and run: ```cargo run```
 
 ### Option 2. Begin from eframe_template app.
 * Download eframe_template from [Github](https://github.com/emilk/eframe_template).
