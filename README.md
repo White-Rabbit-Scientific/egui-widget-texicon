@@ -10,7 +10,7 @@ It supports:
 - Full frame or image+text-only interaction sensing
 - Tooltips with customizable position and gap
 - Builder pattern for clean, fluent configuration
-- Runs on Linux, Mac, Windows
+- Runs on Linux, Mac, Windows and WebAssembly (wasm)
 
 Ideal for desktop apps, tools, editors, and games built with `egui` + `eframe`.
 
@@ -18,9 +18,13 @@ Ideal for desktop apps, tools, editors, and games built with `egui` + `eframe`.
 
 ![Screenshot](images/Screenshot1.png)
 
-## Preview
+## Preview / live wasm demo
 
-* [Live wasm browser example.](https://dreamy-meringue-f98d25.netlify.app/)
+* The [Live wasm](https://dreamy-meringue-f98d25.netlify.app/) demo runs in your web browser.
+
+## Theming
+
+The demo app also shows off the [Catppuccin](https://catppuccin.com/) themes which are available as an egui widget on White Rabbit's ```egui-themes``` [Github repo](https://github.com/White-Rabbit-Scientific/egui-themes).
 
 ## Quick Start
 
