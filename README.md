@@ -3,14 +3,14 @@
 **Texicon** is a highly customizable, stateful icon + text widget for **[egui](https://github.com/emilk/egui)** — perfect for toolbars, sidebars, dashboards, or any UI where you need clean, modern-looking clickable icons with optional labels and rich interaction states (normal, hover, selected).
 
 It supports:
-- Custom SVG/PNG images with tinting
-- Multi-state coloring (normal / hover / selected)
-- Optional text below the icon with automatic centering and wrapping
-- Clickable full frame or image+text-only interaction sensing
-- Tooltips with customizable position and gap
-- Builder pattern for clean, fluent configuration
-- Runs on Linux, Mac, Windows, WebAssembly (wasm) and Raspberry Pi
-- Images are compiled into the binary executable
+* Custom SVG/PNG images with tinting
+* Multi-state coloring (normal / hover / selected)
+* Optional text below the icon with automatic centering and wrapping
+* Clickable full frame or image+text-only interaction sensing
+* Tooltips with customizable position and gap
+* Builder pattern for clean, fluent configuration
+* Runs on Linux, Mac, Windows, WebAssembly (wasm) and Raspberry Pi
+* Images are compiled into the binary executable
 
 Ideal for desktop apps, tools, editors, and games built with [egui](https://github.com/emilk/egui/) + [eframe](https://github.com/emilk/eframe_template).
 
