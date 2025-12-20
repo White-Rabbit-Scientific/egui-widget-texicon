@@ -21,6 +21,7 @@ The wasm [demo app](https://dreamy-meringue-f98d25.netlify.app/) runs in your we
 ## Screenshots
 ![Texicon screenshot 1](https://raw.githubusercontent.com/White-Rabbit-Scientific/egui-widget-texicon/main/images/Screenshot1.png)
 ![Texicon screenshot 2](https://raw.githubusercontent.com/White-Rabbit-Scientific/egui-widget-texicon/main/images/Screenshot2.png)
+![Texicon screenshot 3](https://raw.githubusercontent.com/White-Rabbit-Scientific/egui-widget-texicon/main/images/Screenshot3.png)
 
 ## Theming
 
@@ -76,9 +77,14 @@ egui_widget_texicon::Texicon::new(TEXI_IMG)
     .tooltip_position(egui::RectAlign::BOTTOM),
 ```
 
+## Platform Support
+* Linux
+* macOS
+* Windows
+* WebAssembly (wasm)
+* Raspberry Pi 5 with Touchscreen
 
 ## License
-
 Licensed under either of:
 * Apache License, Version 2.0 (LICENSE-APACHE)
 * MIT License (LICENSE-MIT)
@@ -86,7 +92,7 @@ Licensed under either of:
 at your option.
 
 ## Author
-Made with ❤️ by Rob @ White Rabbit Scientific
+Made with ❤️ by Rob @ White Rabbit Scientific.
 
 Inspired by modern design tools and clean UI patterns.
 
