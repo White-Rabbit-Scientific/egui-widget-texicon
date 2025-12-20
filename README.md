@@ -23,7 +23,7 @@ The wasm [demo app](https://dreamy-meringue-f98d25.netlify.app/) runs in your we
 
 ## Theming
 
-The demo app uses the [Catppuccin](https://catppuccin.com/) ```egui-themes``` widget with extended color palette, available on White Rabbit's [Github repo](https://github.com/White-Rabbit-Scientific/egui-themes).
+The demo app uses the [Catppuccin](https://catppuccin.com/) ```egui-widget-themenator``` widget with extended color palette, available on White Rabbit's [Github repo](https://github.com/White-Rabbit-Scientific/egui-widget-themenator).
 
 ## Quick Start
 
@@ -40,7 +40,7 @@ egui-widget-texicon = 0.2
 egui_extras = { version = "0.33", features = ["default", "all_loaders"] }
 ```
 ```main.rs``` needs a small modification to include the image loader. Modify the ```Box::new``` code block:
-```toml
+```rust
 Box::new(|cc| {
     // This gives us image support:
     egui_extras::install_image_loaders(&cc.egui_ctx);
@@ -48,15 +48,15 @@ Box::new(|cc| {
 }),
 ```
 In ```app.rs``` select an image to use for the Texicon. The following uses an existing ```eframe_template``` image:
-```toml
+```rust
 const TEXI_IMG: egui::ImageSource<'_> = egui::include_image!("../assets/icon-1024.png");
 ```
 The Texicon widget is added into your app as follows. TEXI_IMG is passed to the widget:
-```toml
+```rust
 ui.add(egui_widget_texicon::Texicon::new(TEXI_IMG));
 ```
 Texicon widgets can be customized as shown in the example below:
-```toml
+```rust
 egui_widget_texicon::Texicon::new(TEXI_IMG)
     .enabled(true)
     .selected(true)
