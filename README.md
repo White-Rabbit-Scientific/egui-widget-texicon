@@ -24,7 +24,7 @@ The wasm [demo app](https://dreamy-meringue-f98d25.netlify.app/) runs in your we
 
 ## Theming
 
-The demo app uses the [Catppuccin](https://catppuccin.com/) ```egui-widget-themenator``` widget with extended color palette, available on White Rabbit's [Github repo](https://github.com/White-Rabbit-Scientific/egui-widget-themenator).
+The demo app uses White Rabbit's [Themenator](https://github.com/White-Rabbit-Scientific/egui-widget-themenator) widget to provide [Catppuccin](https://catppuccin.com/) color theming.
 
 ## Quick Start
 
