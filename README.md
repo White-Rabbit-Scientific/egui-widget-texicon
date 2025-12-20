@@ -2,7 +2,7 @@
 
 **Texicon** (Text+icon) is a highly customizable, stateful icon + text widget for **[egui](https://github.com/emilk/egui)** — perfect for toolbars, sidebars, dashboards, or any UI where you need clean, modern-looking clickable icons with optional labels and rich interaction states (normal, hover, selected).
 
-It supports:
+## Features
 * Custom SVG/PNG images with tinting
 * Multi-state coloring (normal / hover / selected)
 * Optional text below the icon with automatic centering and wrapping
@@ -18,8 +18,9 @@ Ideal for desktop apps, tools, editors, and games built with [egui](https://gith
 
 The wasm [demo app](https://dreamy-meringue-f98d25.netlify.app/) runs in your web browser.
 
-![Screenshot](images/Screenshot1.png)
-![Screenshot](images/Screenshot2.png)
+## Screenshots
+![Texicon screenshot 1](https://raw.githubusercontent.com/White-Rabbit-Scientific/egui-widget-texicon/main/images/Screenshot1.png)
+![Texicon screenshot 2](https://raw.githubusercontent.com/White-Rabbit-Scientific/egui-widget-texicon/main/images/Screenshot2.png)
 
 ## Theming
 
