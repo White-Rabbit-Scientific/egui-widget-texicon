@@ -1,6 +1,6 @@
 # Texicon — A Beautiful Icon + Text Button Widget for egui
 
-**Texicon** is a highly customizable, stateful icon + text widget for **[egui](https://github.com/emilk/egui)** — perfect for toolbars, sidebars, dashboards, or any UI where you need clean, modern-looking clickable icons with optional labels and rich interaction states (normal, hover, selected).
+**Texicon** (Text+icon) is a highly customizable, stateful icon + text widget for **[egui](https://github.com/emilk/egui)** — perfect for toolbars, sidebars, dashboards, or any UI where you need clean, modern-looking clickable icons with optional labels and rich interaction states (normal, hover, selected).
 
 It supports:
 * Custom SVG/PNG images with tinting
