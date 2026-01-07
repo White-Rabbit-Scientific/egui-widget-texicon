@@ -33,15 +33,19 @@ The demo app uses White Rabbit's [Themenator](https://github.com/White-Rabbit-Sc
 * [Download from Github](https://github.com/White-Rabbit-Scientific/egui-widget-texicon-demo-app) then compile and run: ```cargo run```
 
 ### Option 2. Begin from eframe_template app.
+
 * [Download the eframe_template](https://github.com/emilk/eframe_template) from Github.
 * Ensure ```rust-toolchain``` and ```Cargo.toml``` specify the latest rust version.
 * Add ```egui-widget-texicon``` and ```egui_extras``` to `Cargo.toml`. ```egui_extras``` is required for egui to load images.
+
 ```toml
 [dependencies]
 egui-widget-texicon = 0.2
 egui_extras = { version = "0.33", features = ["default", "all_loaders"] }
 ```
+
 ```main.rs``` needs a small modification to include the image loader. Modify the ```Box::new``` code block:
+
 ```rust
 Box::new(|cc| {
     // This gives us image support:
@@ -49,6 +53,7 @@ Box::new(|cc| {
     Ok(Box::new(eframe_template::TemplateApp::new(cc)))
 }),
 ```
+
 In ```app.rs``` select an image to use for the Texicon. The following uses an existing ```eframe_template``` image:
 ```rust
 const TEXI_IMG: egui::ImageSource<'_> = egui::include_image!("../assets/icon-1024.png");
@@ -59,22 +64,24 @@ ui.add(egui_widget_texicon::Texicon::new(TEXI_IMG));
 ```
 Texicon widgets can be customized as shown in the example below:
 ```rust
-egui_widget_texicon::Texicon::new(TEXI_IMG)
-    .enabled(true)
-    .selected(true)
-    .img_size(egui::vec2(50., 50.))
-    .img_scale_hov(1.5)
-    .text("Button text")
-    .text_size(18.)
-    .bkgnd_col(egui::Color32::RED)
-    .img_tint_col_hov(egui::Color32::PURPLE)
-    .text_col_hov(egui::Color32::ORANGE)
-    .frame_col_hov(egui::Color32::GREEN)
-    .frame_size(egui::vec2(100., 150.))
-    .frame_width(4.)
-    .tooltip_text("I am a tooltip".to_string())
-    .tooltip_gap(40.)
-    .tooltip_position(egui::RectAlign::BOTTOM),
+ui.add(
+    egui_widget_texicon::Texicon::new(TEXI_IMG)
+        .enabled(true)
+        .selected(true)
+        .img_size(egui::vec2(50., 50.))
+        .img_scale_hov(1.5)
+        .text("Button text")
+        .text_size(18.)
+        .bkgnd_col(egui::Color32::RED)
+        .img_tint_col_hov(egui::Color32::PURPLE)
+        .text_col_hov(egui::Color32::ORANGE)
+        .frame_col_hov(egui::Color32::GREEN)
+        .frame_size(egui::vec2(100., 150.))
+        .frame_width(4.)
+        .tooltip_text("I am a tooltip".to_string())
+        .tooltip_gap(40.)
+        .tooltip_position(egui::RectAlign::BOTTOM),
+);
 ```
 
 ## Platform Support
