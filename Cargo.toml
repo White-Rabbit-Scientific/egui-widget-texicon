@@ -1,8 +1,8 @@
 [package]
 name = "egui_widget_texicon"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
-rust-version = "1.92"
+rust-version = "1.96"
 description = "An egui widget that combines an image and text (icon + label)"
 keywords = ["egui", "eframe", "widget", "ui", "gamedev", "image", "text", "icon", "label"]
 categories = ["gui", "graphics", "rendering", "widget"]
@@ -19,10 +19,10 @@ exclude = [
 ]
 
 [dependencies]
-egui = "0.33"
+egui = "0.35"
 
 [features]
 default = []
 
 [dev-dependencies]
-eframe = "0.33"
+eframe = "0.35"
