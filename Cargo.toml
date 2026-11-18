@@ -1,8 +1,8 @@
 [package]
 name = "egui_widget_texicon"
-version = "0.2.1"
+version = "0.2.3"
 edition = "2021"
-rust-version = "1.96"
+rust-version = "1.100"
 description = "An egui widget that combines an image and text (icon + label)"
 keywords = ["egui", "eframe", "widget", "ui", "gamedev", "image", "text", "icon", "label"]
 categories = ["gui", "graphics", "rendering", "widget"]
@@ -10,7 +10,6 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/white-rabbit-scientific/egui-widget-texicon"
 documentation = "https://docs.rs/egui-widget-texicon"
 readme = "README.md"
-homepage = "https://github.com/white-rabbit-scientific/egui-widget-texicon"
 
 # Exclude from crate.io
 exclude = [
@@ -19,10 +18,10 @@ exclude = [
 ]
 
 [dependencies]
-egui = "0.35"
+egui = "0.37"
 
 [features]
 default = []
 
 [dev-dependencies]
-eframe = "0.35"
+eframe = "0.37"
